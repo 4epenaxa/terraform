@@ -1,0 +1,19 @@
+- name: Remove user petya
+  user:
+    name: petya
+    state: absent
+
+- name: Set timezone to UTC+3
+  timezone:
+    name: Europe/Moscow
+
+- name: Create the 'www' group
+  group:
+    name: www
+    state: present
+
+- name: Create user 'www'
+  user:
+    name: www
+    groups: www
+    append: yes

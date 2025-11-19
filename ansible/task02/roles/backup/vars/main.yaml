@@ -1,0 +1,2 @@
+source_dir: /var/www
+backup_dir: /var/www_backup

@@ -1,0 +1,9 @@
+- name: Deploy application with roles
+  hosts: sber
+  become: true
+
+  roles:
+    - user_setup
+    - nginx
+    - backup
+    - app_deploy

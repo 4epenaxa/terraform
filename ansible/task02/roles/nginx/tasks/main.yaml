@@ -1,0 +1,12 @@
+- name: Install Nginx
+  apt:
+    name: nginx
+    update_cache: yes
+    state: present
+
+- name: Configure Nginx root
+  replace:
+    path: /etc/nginx/sites-enabled/default
+    regexp: '^(\s*)root\s+.*;$'
+    replace: '\1root /var/www;'
+  notify: restart_nginx

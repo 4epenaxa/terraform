@@ -1,0 +1,27 @@
+- name: Install unzip
+  apt:
+    name: unzip
+    state: present
+
+- name: Copy app archive
+  copy:
+    src: distribReactApp.zip
+    dest: /tmp/appDistrib.zip
+    owner: www
+    group: www
+    mode: '0644'
+
+- name: Extract app to /var/www
+  unarchive:
+    src: /tmp/appDistrib.zip
+    dest: /var/www
+    remote_src: yes
+
+- name: Verify website
+  uri:
+    url: http://localhost
+    return_content: yes
+  register: result
+  failed_when:
+    - result.status != 200
+    - result.content is not search('<title>React App</title>')
