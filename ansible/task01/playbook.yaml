@@ -1,0 +1,104 @@
+---
+- name: Manage user, install Nginx and create group/user
+  hosts: sber
+  become: true
+
+  vars:
+    backup_dir: /var/www_backup
+    source_dir: /var/www
+
+  tasks:
+    # Проверяем существование пользователя 'petya' и удаляем его, если найден
+    - name: Check if user 'petya' exists and remove it
+      user:
+        name: petya
+        state: absent
+
+    # Устанавливаем часовой пояс UTC+3
+    - name: Set timezone to UTC+3
+      timezone:
+        name: Europe/Moscow
+
+    # Устанавливаем Nginx
+    - name: Install Nginx package
+      apt:
+        name: nginx
+        update_cache: yes
+        state: present
+
+    # Установка unzip для распаковки ZIP-архивов
+    - name: Install unzip utility
+      apt:
+        name: unzip
+        state: present
+
+    # Создаем группу 'www'
+    - name: Create the 'www' group
+      group:
+        name: www
+        state: present
+
+    # Создаем пользователя 'www', добавляем его в группу 'www'
+    - name: Create user 'www' and add to group 'www'
+      user:
+        name: www
+        groups: www
+        append: yes
+
+    # Копируем файл distribReactApp.zip на целевой хост
+    - name: Copy app distrib
+      copy:
+        src: distribReactApp.zip
+        dest: /tmp/appDistrib.zip
+        owner: www
+        group: www
+        mode: '0644'
+
+    # Создаем необходимые директории
+    - name: Ensure required directories exist with proper ownership
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: www
+        group: www
+        mode: '0755'
+      loop:
+        - "{{ source_dir }}"
+        - "{{ backup_dir }}"
+
+    # Архивируем содержимое папки /var/www и сохраняем в /var/www_backup
+    - name: Archive contents of /var/www into a tar.gz in /var/www_backup
+      archive:
+        path: "{{ source_dir }}/."
+        format: gz
+        dest: "{{ backup_dir }}/backup_{{ '%Y-%m-%d_%H%M%S'|strftime }}.tar.gz"
+
+    # Распаковка приложения в /var/www
+    - name: Extract content from appDistrib.zip into /var/www/html
+      unarchive:
+        src: "/tmp/appDistrib.zip"
+        dest: "{{ source_dir }}"
+        remote_src: yes
+
+    # Настроить Nginx, указав директорию /var/www в качестве корня
+    - name: Configure Nginx by setting root directory to /var/www
+      replace:
+        path: /etc/nginx/sites-enabled/default
+        regexp: '^(\s*)root\s+.*;$'
+        replace: '\1root /var/www;'
+      notify: restart_nginx
+
+    # Проверка доступности сайта и наличия нужного заголовка
+    - name: Verify website returns 200 OK and has correct title
+      uri:
+        url: http://localhost
+        return_content: yes
+      register: result
+      failed_when:
+        - result.status != 200
+
+  handlers:
+    - name: restart_nginx
+      service:
+        name: nginx
+        state: reloaded

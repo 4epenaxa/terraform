@@ -1,0 +1,9 @@
+---
+- name: Check apt cache freshness
+  hosts: all
+
+  tasks:
+    - name: Update apt cache if outdated
+      apt:
+        update_cache: yes
+        cache_valid_time: 86400   # 24 часа
