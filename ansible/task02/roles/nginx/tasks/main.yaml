@@ -4,9 +4,20 @@
     update_cache: yes
     state: present
 
-- name: Configure Nginx root
-  replace:
-    path: /etc/nginx/sites-enabled/default
-    regexp: '^(\s*)root\s+.*;$'
-    replace: '\1root /var/www;'
+# - name: Configure Nginx root
+#   replace:
+#     path: /etc/nginx/sites-enabled/default
+#     regexp: '^(\s*)root\s+.*;$'
+#     replace: '\1root /var/www;'
+#   notify: restart_nginx
+
+# Deploy Nginx config from template
+- name: Deploy Nginx site config
+  template:
+    src: default.j2
+    dest: /etc/nginx/sites-enabled/default
+    owner: root
+    group: root
+    mode: '0644'
   notify: restart_nginx
+

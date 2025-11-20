@@ -17,3 +17,8 @@
     name: www
     groups: www
     append: yes
+
+- name: Install unzip
+  apt:
+    name: unzip
+    state: present
