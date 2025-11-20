@@ -4,10 +4,10 @@ data "sbercloud_images_image" "ubuntu_image" {
   most_recent = true
 }
 # --- SSH-ключ ---
-resource "sbercloud_compute_keypair" "key_ex1" {
-  name       = "tf_key"
-  public_key = file("~/.ssh/id_rsa.pub")  # путь к вашему .pub файлу
-}
+# resource "sbercloud_compute_keypair" "key_ex1" {
+#   name       = "tf_key"
+#   public_key = file("~/.ssh/id_rsa.pub")  # путь к вашему .pub файлу
+# }
 # --- Сеть ---
 resource "sbercloud_vpc" "vpc_01" {
   name = "vpc_terraform"
@@ -29,7 +29,7 @@ resource "sbercloud_compute_instance" "ecs_01" {
   flavor_id         = "s7n.medium.2"
   security_groups   = ["default"]
   availability_zone = "ru-moscow-1a"
-  key_pair          = sbercloud_compute_keypair.key_ex1.name
+#   key_pair          = sbercloud_compute_keypair.key_ex1.name
   admin_pass        = var.root_password
 
   system_disk_type = "SAS"
