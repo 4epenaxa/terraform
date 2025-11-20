@@ -1,24 +1,30 @@
-- name: Remove user petya
-  user:
-    name: petya
-    state: absent
+- block:
+  - name: Remove user petya
+    user:
+      name: petya
+      state: absent
 
-- name: Set timezone to UTC+3
-  timezone:
-    name: Europe/Moscow
+  - name: Create the 'www' group
+    group:
+      name: www
+      state: present
 
-- name: Create the 'www' group
-  group:
-    name: www
-    state: present
+  - name: Create user 'www'
+    user:
+      name: www
+      groups: www
+      append: yes
+  tags: [setup, users]
 
-- name: Create user 'www'
-  user:
-    name: www
-    groups: www
-    append: yes
+- block:
+  - name: Set timezone to UTC+3
+    timezone:
+      name: Europe/Moscow
+  tags: [setup, timezone]
 
-- name: Install unzip
-  apt:
-    name: unzip
-    state: present
+- block:
+  - name: Install unzip
+    apt:
+      name: unzip
+      state: present
+  tags: [setup, packages]

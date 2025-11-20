@@ -1,9 +1,10 @@
-- name: Install Nginx
-  apt:
-    name: nginx
-    update_cache: yes
-    state: present
-
+- block:
+  - name: Install Nginx
+    apt:
+      name: nginx
+      update_cache: yes
+      state: present
+  tags: [nginx, install, packages]
 # - name: Configure Nginx root
 #   replace:
 #     path: /etc/nginx/sites-enabled/default
@@ -12,12 +13,15 @@
 #   notify: restart_nginx
 
 # Deploy Nginx config from template
-- name: Deploy Nginx site config
-  template:
-    src: default.j2
-    dest: /etc/nginx/sites-enabled/default
-    owner: root
-    group: root
-    mode: '0644'
-  notify: restart_nginx
+- block:
+  - name: Deploy Nginx site config
+    template:
+      src: default.j2
+      dest: /etc/nginx/sites-enabled/default
+      owner: root
+      group: root
+      mode: '0644'
+    notify: restart_nginx
+  tags: [nginx, config]
+
 

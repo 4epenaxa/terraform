@@ -1,16 +1,18 @@
-- name: Ensure directories exist
-  file:
-    path: "{{ item }}"
-    state: directory
-    owner: www
-    group: www
-    mode: '0755'
-  loop:
-    - "{{ source_dir }}"
-    - "{{ backup_dir }}"
+- block:
+  - name: Ensure directories exist
+    file:
+      path: "{{ item }}"
+      state: directory
+      owner: www
+      group: www
+      mode: '0755'
+    loop:
+      - "{{ source_dir }}"
+      - "{{ backup_dir }}"
 
-- name: Archive /var/www
-  archive:
-    path: "{{ source_dir }}/."
-    format: gz
-    dest: "{{ backup_dir }}/backup_{{ '%Y-%m-%d_%H%M%S'|strftime }}.tar.gz"
+  - name: Archive /var/www
+    archive:
+      path: "{{ source_dir }}/."
+      format: gz
+      dest: "{{ backup_dir }}/backup_{{ '%Y-%m-%d_%H%M%S'|strftime }}.tar.gz"
+  tags: [backup]

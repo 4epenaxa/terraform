@@ -1,22 +1,28 @@
-- name: Copy app archive
-  copy:
-    src: distribReactApp.zip
-    dest: /tmp/appDistrib.zip
-    owner: www
-    group: www
-    mode: '0644'
+- block:
+  - name: Copy app archive
+    copy:
+      src: distribReactApp.zip
+      dest: /tmp/appDistrib.zip
+      owner: www
+      group: www
+      mode: '0644'
+  tags: [deploy, copy]
 
-- name: Extract app to /var/www
-  unarchive:
-    src: /tmp/appDistrib.zip
-    dest: /var/www
-    remote_src: yes
+- block:
+  - name: Extract app to /var/www
+    unarchive:
+      src: /tmp/appDistrib.zip
+      dest: /var/www
+      remote_src: yes
+  tags: [deploy, unarchive]
 
-- name: Verify website
-  uri:
-    url: http://localhost
-    return_content: yes
-  register: result
-  failed_when:
-    - result.status != 200
-    - result.content is not search('<title>React App</title>')
+- block:
+  - name: Verify website
+    uri:
+      url: http://localhost
+      return_content: yes
+    register: result
+    failed_when:
+      - result.status != 200
+      - result.content is not search('<title>React App</title>')
+  tags: [deploy, verify]
