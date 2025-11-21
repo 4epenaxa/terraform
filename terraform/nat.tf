@@ -31,10 +31,32 @@ resource "sbercloud_nat_dnat_rule" "ssh_dnat_vm1" {
   nat_gateway_id = sbercloud_nat_gateway.nat_01.id
   floating_ip_id = sbercloud_vpc_eip.nat_eip.id
 
-  # Порт VM-1, на который NAT будет перенаправлять
-  port_id = sbercloud_compute_instance.ecs_01[0].network[0].port
+  port_id = sbercloud_compute_instance.vm1.network[0].port
 
   protocol              = "tcp"
   internal_service_port = 22
   external_service_port = 22
+}
+
+resource "sbercloud_nat_dnat_rule" "http_dnat_vm1" {
+  nat_gateway_id = sbercloud_nat_gateway.nat_01.id
+  floating_ip_id = sbercloud_vpc_eip.nat_eip.id
+
+  port_id = sbercloud_compute_instance.vm1.network[0].port
+
+  protocol              = "tcp"
+  internal_service_port = 80
+  external_service_port = 80
+}
+
+resource "sbercloud_nat_dnat_rule" "ssh_dnat_vm2" {
+  nat_gateway_id = sbercloud_nat_gateway.nat_01.id
+  floating_ip_id = sbercloud_vpc_eip.nat_eip.id
+
+  # Порт VM-2, на который NAT будет перенаправлять
+  port_id = sbercloud_compute_instance.vm2.network[0].port
+
+  protocol              = "tcp"
+  internal_service_port = 22
+  external_service_port = 2222
 }
