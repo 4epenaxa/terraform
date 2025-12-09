@@ -40,3 +40,8 @@ terraform.rc
 *.backup
 tmp
 /playbook
+/test
+*.old
+
+token.json
+*.ova
